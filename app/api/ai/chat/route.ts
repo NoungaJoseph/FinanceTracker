@@ -12,7 +12,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Using Hugging Face Inference API (free tier available)
-    // You can get a free API key from https://huggingface.co/settings/tokens
     const HF_API_KEY = process.env.HUGGINGFACE_API_KEY || 'hf_default_key';
     
     // Using a free open-source model: mistral-7b-instruct
@@ -32,7 +31,6 @@ export async function POST(request: NextRequest) {
     );
 
     if (!response.ok) {
-      // Fallback to a simple rule-based response if API fails
       const fallbackResponse = generateFallbackResponse(message);
       return NextResponse.json({
         response: fallbackResponse,
@@ -42,10 +40,8 @@ export async function POST(request: NextRequest) {
 
     const result = await response.json();
     
-    // Extract the generated text from the response
     const generatedText = result[0]?.generated_text || '';
     
-    // Clean up the response (remove the input prompt)
     const cleanedResponse = generatedText
       .replace(/You are a helpful financial advisor AI.*?\n\n/s, '')
       .trim();
@@ -57,7 +53,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('AI Chat Error:', error);
     
-    // Return a fallback response
     const { message } = await request.json();
     return NextResponse.json({
       response: generateFallbackResponse(message),
@@ -69,7 +64,6 @@ export async function POST(request: NextRequest) {
 function generateFallbackResponse(message: string): string {
   const lowerMessage = message.toLowerCase();
 
-  // Financial advice responses
   if (lowerMessage.includes('budget') || lowerMessage.includes('spending')) {
     return 'A good budgeting strategy is to follow the 50/30/20 rule: 50% for needs, 30% for wants, and 20% for savings and debt repayment. Track your expenses regularly to identify areas where you can cut back.';
   }
@@ -106,6 +100,5 @@ function generateFallbackResponse(message: string): string {
     return 'Start saving for retirement as early as possible to benefit from compound interest. Aim to replace 70-80% of your pre-retirement income. Consider employer 401(k) matches and individual retirement accounts (IRAs).';
   }
 
-  // Default response
-  return 'I\'m here to help with your financial questions! Ask me about budgeting, saving, investing, debt management, emergency funds, financial goals, income strategies, taxes, or retirement planning.';
+  return 'I am here to help with your financial questions! Ask me about budgeting, saving, investing, debt management, emergency funds, financial goals, income strategies, taxes, or retirement planning.';
 }
