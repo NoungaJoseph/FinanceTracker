@@ -18,16 +18,6 @@ export default function SignupPage() {
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
 
-  // Prevent form submission errors by disabling the default form action
-  useEffect(() => {
-    const form = document.querySelector('form');
-    if (form) {
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-      });
-    }
-  }, []);
-
   const calculatePasswordStrength = (password: string) => {
     let strength = 0;
     if (password.length >= 8) strength++;
@@ -43,9 +33,7 @@ export default function SignupPage() {
     setPasswordStrength(calculatePasswordStrength(password));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleCreateAccount = () => {
     if (!agreeToTerms) {
       toast.error('Please agree to the Terms of Service and Privacy Policy');
       return;
@@ -157,7 +145,7 @@ export default function SignupPage() {
           <p className="text-gray-400 text-center mb-8">Join thousands managing their finances smarter</p>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-4">
             {/* Full Name */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
@@ -269,15 +257,15 @@ export default function SignupPage() {
 
             {/* Submit Button */}
             <button
-              type="button" // Changed from submit to button to avoid form submission
-              onClick={handleSubmit}
+              type="button"
+              onClick={handleCreateAccount}
               disabled={isLoading}
               className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
             >
               {isLoading ? 'Creating Account...' : 'Create Account'}
               {!isLoading && <span>→</span>}
             </button>
-          </form>
+          </div>
 
           {/* Divider */}
           <div className="relative my-6">

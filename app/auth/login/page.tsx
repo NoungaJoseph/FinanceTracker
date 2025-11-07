@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Mail, Lock } from 'lucide-react';
@@ -15,19 +15,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
-  // Prevent form submission errors by disabling the default form action
-  useEffect(() => {
-    const form = document.querySelector('form');
-    if (form) {
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-      });
-    }
-  }, []);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleLogin = () => {
     if (!formData.email || !formData.password) {
       toast.error('Please enter both email and password');
       return;
@@ -115,8 +103,8 @@ export default function LoginPage() {
           <h1 className="text-3xl font-bold text-white text-center mb-2">Welcome Back</h1>
           <p className="text-gray-400 text-center mb-8">Sign in to your account to continue</p>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Form Fields */}
+          <div className="space-y-4">
             {/* Email */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
@@ -170,15 +158,15 @@ export default function LoginPage() {
 
             {/* Submit Button */}
             <button
-              type="button" // Changed from submit to button to avoid form submission
-              onClick={handleSubmit}
+              type="button"
+              onClick={handleLogin}
               disabled={isLoading}
               className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 mt-6"
             >
               {isLoading ? 'Signing in...' : 'Sign In'}
               {!isLoading && <span>→</span>}
             </button>
-          </form>
+          </div>
 
           {/* Divider */}
           <div className="relative my-6">
