@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/lib/context';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { AIAssistant } from '@/components/ai/AIAssistant';
-import { LogOut, Settings, Moon, Sun } from 'lucide-react';
+import { LogOut, Settings, Moon, Sun, TrendingUp, Wallet, Target } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { toast } from 'sonner';
 
@@ -86,13 +87,13 @@ export default function DashboardPage() {
   const balance = totalIncome - totalExpenses;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
-      <header className="bg-white dark:bg-slate-800 border-b dark:border-slate-700 sticky top-0 z-50">
+      <header className="bg-slate-800/50 backdrop-blur-xl border-b border-purple-500/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Finance Dashboard</h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Welcome, {user?.name}</p>
+            <h1 className="text-2xl font-bold text-white">Finance Dashboard</h1>
+            <p className="text-sm text-gray-400">Welcome, {user?.name}</p>
           </div>
 
           <div className="flex items-center gap-4">
@@ -100,14 +101,25 @@ export default function DashboardPage() {
               variant="ghost"
               size="icon"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="text-white hover:bg-slate-700"
             >
-              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </Button>
-            <Button variant="ghost" size="icon" onClick={() => router.push('/settings')}>
-              <Settings className="w-4 h-4" />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => router.push('/dashboard/settings')}
+              className="text-white hover:bg-slate-700"
+            >
+              <Settings className="w-5 h-5" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={handleLogout}>
-              <LogOut className="w-4 h-4" />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleLogout}
+              className="text-white hover:bg-red-600/20"
+            >
+              <LogOut className="w-5 h-5" />
             </Button>
           </div>
         </div>
@@ -115,105 +127,99 @@ export default function DashboardPage() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {isLoading ? (
-          <div className="flex items-center justify-center h-96">
-            <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+        {/* Navigation Tabs */}
+        <div className="mb-8 flex gap-4 flex-wrap">
+          <Link href="/dashboard">
+            <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+              <TrendingUp className="w-4 h-4 mr-2" />
+              Overview
+            </Button>
+          </Link>
+          <Link href="/dashboard/expenses">
+            <Button variant="outline" className="border-purple-500/30 text-white hover:bg-slate-700">
+              <Wallet className="w-4 h-4 mr-2" />
+              Expense Tracker
+            </Button>
+          </Link>
+          <Link href="/dashboard/goals">
+            <Button variant="outline" className="border-purple-500/30 text-white hover:bg-slate-700">
+              <Target className="w-4 h-4 mr-2" />
+              Goals
+            </Button>
+          </Link>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-slate-800/50 backdrop-blur-xl rounded-xl border border-purple-500/20 p-6">
+            <p className="text-gray-400 text-sm mb-2">Total Income</p>
+            <p className="text-3xl font-bold text-green-400">₦{totalIncome.toLocaleString()}</p>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column - Stats and Charts */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Stats Cards */}
-              <div className="grid grid-cols-3 gap-4">
-                <Card className="p-6">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Total Income</p>
-                  <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-2">
-                    ${totalIncome.toFixed(2)}
-                  </p>
-                </Card>
-                <Card className="p-6">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Total Expenses</p>
-                  <p className="text-2xl font-bold text-red-600 dark:text-red-400 mt-2">
-                    ${totalExpenses.toFixed(2)}
-                  </p>
-                </Card>
-                <Card className="p-6">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Balance</p>
-                  <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-2">
-                    ${balance.toFixed(2)}
-                  </p>
-                </Card>
+          <div className="bg-slate-800/50 backdrop-blur-xl rounded-xl border border-purple-500/20 p-6">
+            <p className="text-gray-400 text-sm mb-2">Total Expenses</p>
+            <p className="text-3xl font-bold text-red-400">₦{totalExpenses.toLocaleString()}</p>
+          </div>
+          <div className="bg-slate-800/50 backdrop-blur-xl rounded-xl border border-purple-500/20 p-6">
+            <p className="text-gray-400 text-sm mb-2">Balance</p>
+            <p className={`text-3xl font-bold ${balance >= 0 ? 'text-blue-400' : 'text-red-400'}`}>
+              ₦{balance.toLocaleString()}
+            </p>
+          </div>
+        </div>
+
+        {/* Main Content Area */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Transactions */}
+          <div className="lg:col-span-2 bg-slate-800/50 backdrop-blur-xl rounded-xl border border-purple-500/20 p-6">
+            <h2 className="text-xl font-bold text-white mb-4">Recent Transactions</h2>
+            {transactions.length > 0 ? (
+              <div className="space-y-3">
+                {transactions.slice(0, 5).map((transaction) => (
+                  <div key={transaction.id} className="flex justify-between items-center bg-slate-700/50 p-3 rounded-lg">
+                    <div>
+                      <p className="text-white font-semibold">{transaction.description}</p>
+                      <p className="text-gray-400 text-sm">{transaction.category}</p>
+                    </div>
+                    <p className={`font-bold ${transaction.type === 'income' ? 'text-green-400' : 'text-red-400'}`}>
+                      {transaction.type === 'income' ? '+' : '-'}₦{transaction.amount.toLocaleString()}
+                    </p>
+                  </div>
+                ))}
               </div>
-
-              {/* Tabs */}
-              <Tabs defaultValue="transactions" className="space-y-4">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="transactions">Transactions</TabsTrigger>
-                  <TabsTrigger value="goals">Goals</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="transactions">
-                  <Card className="p-6">
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                      Recent Transactions
-                    </h2>
-                    <div className="space-y-2">
-                      {transactions.slice(0, 5).map((t) => (
-                        <div key={t.id} className="flex justify-between items-center p-3 bg-gray-50 dark:bg-slate-800 rounded">
-                          <div>
-                            <p className="font-medium text-gray-900 dark:text-white">{t.description}</p>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">{t.category}</p>
-                          </div>
-                          <p
-                            className={`font-semibold ${
-                              t.type === 'income' ? 'text-green-600' : 'text-red-600'
-                            }`}
-                          >
-                            {t.type === 'income' ? '+' : '-'}${t.amount.toFixed(2)}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </Card>
-                </TabsContent>
-
-                <TabsContent value="goals">
-                  <Card className="p-6">
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                      Financial Goals
-                    </h2>
-                    <div className="space-y-4">
-                      {goals.map((goal) => (
-                        <div key={goal.id} className="p-4 bg-gray-50 dark:bg-slate-800 rounded">
-                          <div className="flex justify-between items-center mb-2">
-                            <p className="font-medium text-gray-900 dark:text-white">{goal.name}</p>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                              ${goal.currentAmount.toFixed(2)} / ${goal.targetAmount.toFixed(2)}
-                            </p>
-                          </div>
-                          <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2">
-                            <div
-                              className="bg-blue-600 h-2 rounded-full"
-                              style={{
-                                width: `${(goal.currentAmount / goal.targetAmount) * 100}%`,
-                              }}
-                            ></div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </Card>
-                </TabsContent>
-              </Tabs>
-            </div>
-
-            {/* Right Column - AI Assistant */}
-            <div className="lg:col-span-1">
-              <AIAssistant />
-            </div>
+            ) : (
+              <p className="text-gray-400">No transactions yet</p>
+            )}
           </div>
-        )}
+
+          {/* Goals */}
+          <div className="bg-slate-800/50 backdrop-blur-xl rounded-xl border border-purple-500/20 p-6">
+            <h2 className="text-xl font-bold text-white mb-4">Your Goals</h2>
+            {goals.length > 0 ? (
+              <div className="space-y-3">
+                {goals.slice(0, 3).map((goal) => (
+                  <div key={goal.id} className="bg-slate-700/50 p-3 rounded-lg">
+                    <p className="text-white font-semibold text-sm">{goal.name}</p>
+                    <div className="w-full bg-slate-600 rounded-full h-2 mt-2">
+                      <div
+                        className="bg-gradient-to-r from-purple-600 to-pink-600 h-2 rounded-full"
+                        style={{ width: `${Math.min((goal.currentAmount / goal.targetAmount) * 100, 100)}%` }}
+                      />
+                    </div>
+                    <p className="text-xs text-gray-400 mt-1">
+                      ₦{goal.currentAmount.toLocaleString()} / ₦{goal.targetAmount.toLocaleString()}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-400">No goals yet</p>
+            )}
+          </div>
+        </div>
       </main>
+
+      {/* AI Assistant */}
+      <AIAssistant />
     </div>
   );
 }
