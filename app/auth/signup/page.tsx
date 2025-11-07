@@ -57,7 +57,7 @@ export default function SignupPage() {
     try {
       await signup(formData.email, formData.password, formData.name);
       toast.success('Account created successfully!');
-      router.push('/dashboard');
+      router.push('/auth/survey');
     } catch (error: any) {
       console.error('Signup error:', error);
       const errorMessage = error?.message || 'Failed to create account. Please try again.';

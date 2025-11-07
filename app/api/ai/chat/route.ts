@@ -1,32 +1,8 @@
-import { PrismaClient } from '@prisma/client';
-import { getUserFromToken } from '@/lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
-import { Anthropic } from '@anthropic-ai/sdk';
-
-const prisma = new PrismaClient();
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
 
 export async function POST(request: NextRequest) {
   try {
-    const token = request.headers.get('authorization')?.replace('Bearer ', '');
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const user = await getUserFromToken(token);
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    const { message, conversationId } = await request.json();
+    const { message } = await request.json();
 
     if (!message) {
       return NextResponse.json(
@@ -35,109 +11,101 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let conversation;
-    if (conversationId) {
-      conversation = await prisma.aIConversation.findUnique({
-        where: { id: conversationId },
-        include: { messages: true },
-      });
-    } else {
-      conversation = await prisma.aIConversation.create({
-        data: { userId: user.id },
-        include: { messages: true },
+    // Using Hugging Face Inference API (free tier available)
+    // You can get a free API key from https://huggingface.co/settings/tokens
+    const HF_API_KEY = process.env.HUGGINGFACE_API_KEY || 'hf_default_key';
+    
+    // Using a free open-source model: mistral-7b-instruct
+    const response = await fetch(
+      'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1',
+      {
+        headers: { Authorization: `Bearer ${HF_API_KEY}` },
+        method: 'POST',
+        body: JSON.stringify({
+          inputs: `You are a helpful financial advisor AI. Answer the following question concisely and helpfully:\n\n${message}`,
+          parameters: {
+            max_length: 500,
+            temperature: 0.7,
+          },
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      // Fallback to a simple rule-based response if API fails
+      const fallbackResponse = generateFallbackResponse(message);
+      return NextResponse.json({
+        response: fallbackResponse,
+        source: 'fallback',
       });
     }
 
-    const transactions = await prisma.transaction.findMany({
-      where: { userId: user.id },
-      orderBy: { date: 'desc' },
-      take: 10,
+    const result = await response.json();
+    
+    // Extract the generated text from the response
+    const generatedText = result[0]?.generated_text || '';
+    
+    // Clean up the response (remove the input prompt)
+    const cleanedResponse = generatedText
+      .replace(/You are a helpful financial advisor AI.*?\n\n/s, '')
+      .trim();
+
+    return NextResponse.json({
+      response: cleanedResponse || generateFallbackResponse(message),
+      source: 'huggingface',
     });
-
-    const goals = await prisma.financialGoal.findMany({
-      where: { userId: user.id },
-    });
-
-    const totalIncome = transactions
-      .filter(t => t.type === 'income')
-      .reduce((sum, t) => sum + t.amount, 0);
-
-    const totalExpenses = transactions
-      .filter(t => t.type === 'expense')
-      .reduce((sum, t) => sum + t.amount, 0);
-
-    const systemPrompt = `You are a helpful financial advisor AI assistant. You help users manage their finances, create budgets, and achieve their financial goals.
-
-User Profile:
-- Name: ${user.name}
-- Occupation: ${user.occupation || 'Not specified'}
-- Monthly Income: $${user.income || 0}
-- Household Size: ${user.householdSize || 'Not specified'}
-- Living Situation: ${user.livingWith || 'Not specified'}
-- Risk Tolerance: ${user.riskTolerance || 'Not specified'}
-
-Financial Summary:
-- Total Income (recent): $${totalIncome}
-- Total Expenses (recent): $${totalExpenses}
-- Current Balance: $${user.monthlyBudget || 0}
-- Active Goals: ${goals.length}
-
-Recent Transactions:
-${transactions.map(t => \`- \${t.description}: $\${t.amount} (\${t.type})\`).join('\n')}
-
-Active Goals:
-${goals.map(g => \`- \${g.name}: $\${g.currentAmount}/$\${g.targetAmount}\`).join('\n')}
-
-Provide personalized financial advice based on their situation. Ask clarifying questions to better understand their needs. Be supportive and encouraging.`;
-
-    const previousMessages = conversation.messages.map(msg => ({
-      role: msg.role as 'user' | 'assistant',
-      content: msg.content,
-    }));
-
-    const response = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
-      max_tokens: 1024,
-      system: systemPrompt,
-      messages: [
-        ...previousMessages,
-        {
-          role: 'user',
-          content: message,
-        },
-      ],
-    });
-
-    const assistantMessage = response.content[0].type === 'text' ? response.content[0].text : '';
-
-    await prisma.aIMessage.create({
-      data: {
-        conversationId: conversation.id,
-        role: 'user',
-        content: message,
-      },
-    });
-
-    await prisma.aIMessage.create({
-      data: {
-        conversationId: conversation.id,
-        role: 'assistant',
-        content: assistantMessage,
-      },
-    });
-
-    return NextResponse.json(
-      {
-        conversationId: conversation.id,
-        message: assistantMessage,
-      },
-      { status: 200 }
-    );
   } catch (error) {
-    console.error('AI chat error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error('AI Chat Error:', error);
+    
+    // Return a fallback response
+    const { message } = await request.json();
+    return NextResponse.json({
+      response: generateFallbackResponse(message),
+      source: 'fallback',
+    });
   }
+}
+
+function generateFallbackResponse(message: string): string {
+  const lowerMessage = message.toLowerCase();
+
+  // Financial advice responses
+  if (lowerMessage.includes('budget') || lowerMessage.includes('spending')) {
+    return 'A good budgeting strategy is to follow the 50/30/20 rule: 50% for needs, 30% for wants, and 20% for savings and debt repayment. Track your expenses regularly to identify areas where you can cut back.';
+  }
+
+  if (lowerMessage.includes('save') || lowerMessage.includes('savings')) {
+    return 'To build a strong savings habit, start by setting a specific savings goal, automate your savings by setting up automatic transfers, and treat savings as a non-negotiable expense. Aim to save at least 10-20% of your income.';
+  }
+
+  if (lowerMessage.includes('invest') || lowerMessage.includes('investment')) {
+    return 'Before investing, ensure you have an emergency fund (3-6 months of expenses), pay off high-interest debt, and understand your risk tolerance. Consider diversifying your investments across stocks, bonds, and other assets.';
+  }
+
+  if (lowerMessage.includes('debt') || lowerMessage.includes('loan')) {
+    return 'To manage debt effectively, list all your debts with interest rates, consider the debt snowball (pay smallest first) or debt avalanche (pay highest interest first) method, and avoid taking on new debt while paying off existing ones.';
+  }
+
+  if (lowerMessage.includes('emergency') || lowerMessage.includes('fund')) {
+    return 'An emergency fund should cover 3-6 months of living expenses. Start by saving 1 month of expenses, then gradually build it up. Keep it in a separate, easily accessible account.';
+  }
+
+  if (lowerMessage.includes('goal') || lowerMessage.includes('financial goal')) {
+    return 'Set SMART financial goals: Specific, Measurable, Achievable, Relevant, and Time-bound. Break down large goals into smaller milestones and track your progress regularly.';
+  }
+
+  if (lowerMessage.includes('income') || lowerMessage.includes('earn')) {
+    return 'To increase your income, consider developing new skills, asking for a raise, starting a side business, or investing in passive income streams. Diversifying income sources provides financial security.';
+  }
+
+  if (lowerMessage.includes('tax') || lowerMessage.includes('taxes')) {
+    return 'To optimize your taxes, keep detailed records of deductions, contribute to tax-advantaged accounts like 401(k)s or IRAs, and consider consulting with a tax professional for personalized advice.';
+  }
+
+  if (lowerMessage.includes('retire') || lowerMessage.includes('retirement')) {
+    return 'Start saving for retirement as early as possible to benefit from compound interest. Aim to replace 70-80% of your pre-retirement income. Consider employer 401(k) matches and individual retirement accounts (IRAs).';
+  }
+
+  // Default response
+  return 'I\'m here to help with your financial questions! Ask me about budgeting, saving, investing, debt management, emergency funds, financial goals, income strategies, taxes, or retirement planning.';
 }
