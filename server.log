@@ -54,3 +54,9 @@ Expected unicode escape
  ○ Compiling /_error ...
  ✓ Compiled /_error in 2.8s
  POST /api/ai/chat 500 in 3253ms
+ ✓ Compiled in 209ms
+ GET /auth/signup 200 in 96ms
+ ✓ Compiled in 514ms
+ ✓ Compiled in 250ms
+ ✓ Compiled in 334ms
+ ✓ Compiled in 278ms
