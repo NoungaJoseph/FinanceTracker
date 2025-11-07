@@ -19,6 +19,10 @@ model User {
   verificationToken     String?
   verificationTokenExp  DateTime?
   
+  // Password reset fields
+  resetToken            String?
+  resetTokenExpiry      DateTime?
+  
   // Profile information
   occupation            String?
   income                Float?

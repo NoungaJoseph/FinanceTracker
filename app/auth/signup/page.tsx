@@ -53,7 +53,7 @@ export default function SignupPage() {
     setIsLoading(true);
 
     try {
-      await signup(formData.name, formData.email, formData.password);
+      await signup(formData.email, formData.password, formData.name);
       toast.success('Account created successfully!');
       router.push('/onboarding');
     } catch (error) {
