@@ -16,21 +16,21 @@ export async function POST(request: NextRequest) {
     }
 
     const user = await prisma.user.findUnique({
-      where: { email },
+      where: { email: email.toLowerCase() },
     });
 
     if (!user) {
       return NextResponse.json(
-        { error: 'Invalid credentials' },
+        { error: 'Invalid email or password' },
         { status: 401 }
       );
     }
 
-    const passwordValid = await verifyPassword(password, user.password);
+    const passwordMatch = await verifyPassword(password, user.password);
 
-    if (!passwordValid) {
+    if (!passwordMatch) {
       return NextResponse.json(
-        { error: 'Invalid credentials' },
+        { error: 'Invalid email or password' },
         { status: 401 }
       );
     }
@@ -49,10 +49,10 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error('Login error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to login. Please try again.' },
       { status: 500 }
     );
   }
