@@ -21,6 +21,9 @@ interface AuthContextType {
   token: string | null;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, name: string) => Promise<void>;
+  loginWithGoogle: (email: string, name: string, googleId: string) => Promise<void>;
+  loginWithGitHub: (email: string, name: string, githubId: string) => Promise<void>;
+  loginWithApple: (email: string, name: string, appleId: string) => Promise<void>;
   logout: () => void;
   updateProfile: (data: Partial<User>) => Promise<void>;
   isLoading: boolean;
@@ -50,11 +53,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       body: JSON.stringify({ email, password }),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      throw new Error('Login failed');
+      throw new Error(data.error || 'Login failed');
     }
 
-    const data = await response.json();
     setToken(data.token);
     setUser(data.user);
     localStorage.setItem('token', data.token);
@@ -68,11 +72,69 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       body: JSON.stringify({ email, password, name }),
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      throw new Error('Signup failed');
+      throw new Error(data.error || 'Signup failed');
     }
 
+    setToken(data.token);
+    setUser(data.user);
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+  };
+
+  const loginWithGoogle = async (email: string, name: string, googleId: string) => {
+    const response = await fetch('/api/auth/google', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, name, googleId }),
+    });
+
     const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Google login failed');
+    }
+
+    setToken(data.token);
+    setUser(data.user);
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+  };
+
+  const loginWithGitHub = async (email: string, name: string, githubId: string) => {
+    const response = await fetch('/api/auth/github', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, name, githubId }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'GitHub login failed');
+    }
+
+    setToken(data.token);
+    setUser(data.user);
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+  };
+
+  const loginWithApple = async (email: string, name: string, appleId: string) => {
+    const response = await fetch('/api/auth/apple', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, name, appleId }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Apple login failed');
+    }
+
     setToken(data.token);
     setUser(data.user);
     localStorage.setItem('token', data.token);
@@ -106,7 +168,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, signup, logout, updateProfile, isLoading }}>
+    <AuthContext.Provider value={{ user, token, login, signup, loginWithGoogle, loginWithGitHub, loginWithApple, logout, updateProfile, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
