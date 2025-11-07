@@ -33,7 +33,7 @@ export default function SignupPage() {
     setPasswordStrength(calculatePasswordStrength(password));
   };
 
-  const handleCreateAccount = () => {
+  const handleCreateAccount = async () => {
     if (!agreeToTerms) {
       toast.error('Please agree to the Terms of Service and Privacy Policy');
       return;
@@ -49,72 +49,96 @@ export default function SignupPage() {
       return;
     }
 
+    if (!formData.name || !formData.email) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+
     setIsLoading(true);
     
-    // Create mock user data
-    const mockUser = {
-      id: 'user-' + Date.now(),
-      email: formData.email,
-      name: formData.name
-    };
-    
-    const mockToken = 'token-' + Date.now();
-    
-    // Simulate network delay
-    setTimeout(() => {
-      // Store mock data
+    try {
+      // Create mock user data
+      const mockUser = {
+        id: 'user-' + Date.now(),
+        email: formData.email,
+        name: formData.name
+      };
+      
+      const mockToken = 'token-' + Date.now();
+      
+      // Store mock data in localStorage
       localStorage.setItem('token', mockToken);
       localStorage.setItem('user', JSON.stringify(mockUser));
       
       toast.success('Account created successfully!');
-      router.push('/auth/survey');
-    }, 1000);
+      
+      // Redirect to survey after a short delay
+      setTimeout(() => {
+        router.push('/auth/survey');
+      }, 500);
+    } catch (error) {
+      console.error('Signup error:', error);
+      toast.error('Failed to create account. Please try again.');
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleSignup = () => {
     setIsLoading(true);
     
-    // Create mock user data for Google login
-    const mockUser = {
-      id: 'google-' + Date.now(),
-      email: 'google-user@example.com',
-      name: 'Google User'
-    };
-    
-    const mockToken = 'google-token-' + Date.now();
-    
-    // Simulate network delay
-    setTimeout(() => {
+    try {
+      // Create mock user data for Google login
+      const mockUser = {
+        id: 'google-' + Date.now(),
+        email: 'google-user-' + Date.now() + '@gmail.com',
+        name: 'Google User'
+      };
+      
+      const mockToken = 'google-token-' + Date.now();
+      
       // Store mock data
       localStorage.setItem('token', mockToken);
       localStorage.setItem('user', JSON.stringify(mockUser));
       
       toast.success('Google login successful!');
-      router.push('/auth/survey');
-    }, 1000);
+      
+      setTimeout(() => {
+        router.push('/auth/survey');
+      }, 500);
+    } catch (error) {
+      console.error('Google signup error:', error);
+      toast.error('Google signup failed');
+      setIsLoading(false);
+    }
   };
 
   const handleAppleSignup = () => {
     setIsLoading(true);
     
-    // Create mock user data for Apple login
-    const mockUser = {
-      id: 'apple-' + Date.now(),
-      email: 'apple-user@example.com',
-      name: 'Apple User'
-    };
-    
-    const mockToken = 'apple-token-' + Date.now();
-    
-    // Simulate network delay
-    setTimeout(() => {
+    try {
+      // Create mock user data for Apple login
+      const mockUser = {
+        id: 'apple-' + Date.now(),
+        email: 'apple-user-' + Date.now() + '@icloud.com',
+        name: 'Apple User'
+      };
+      
+      const mockToken = 'apple-token-' + Date.now();
+      
       // Store mock data
       localStorage.setItem('token', mockToken);
       localStorage.setItem('user', JSON.stringify(mockUser));
       
       toast.success('Apple login successful!');
-      router.push('/auth/survey');
-    }, 1000);
+      
+      setTimeout(() => {
+        router.push('/auth/survey');
+      }, 500);
+    } catch (error) {
+      console.error('Apple signup error:', error);
+      toast.error('Apple signup failed');
+      setIsLoading(false);
+    }
   };
 
   const getPasswordStrengthText = () => {
@@ -277,7 +301,7 @@ export default function SignupPage() {
             </div>
           </div>
 
-          {/* Social Buttons - Fixed Layout */}
+          {/* Social Buttons */}
           <div className="space-y-3">
             <button
               type="button"

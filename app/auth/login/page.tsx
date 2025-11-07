@@ -15,7 +15,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!formData.email || !formData.password) {
       toast.error('Please enter both email and password');
       return;
@@ -23,70 +23,92 @@ export default function LoginPage() {
 
     setIsLoading(true);
     
-    // Create mock user data
-    const mockUser = {
-      id: 'user-' + Date.now(),
-      email: formData.email,
-      name: formData.email.split('@')[0]
-    };
-    
-    const mockToken = 'token-' + Date.now();
-    
-    // Simulate network delay
-    setTimeout(() => {
+    try {
+      // Create mock user data
+      const mockUser = {
+        id: 'user-' + Date.now(),
+        email: formData.email,
+        name: formData.email.split('@')[0]
+      };
+      
+      const mockToken = 'token-' + Date.now();
+      
       // Store mock data
       localStorage.setItem('token', mockToken);
       localStorage.setItem('user', JSON.stringify(mockUser));
       
+      if (rememberMe) {
+        localStorage.setItem('rememberMe', 'true');
+      }
+      
       toast.success('Logged in successfully!');
-      router.push('/dashboard');
-    }, 1000);
+      
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 500);
+    } catch (error) {
+      console.error('Login error:', error);
+      toast.error('Login failed. Please try again.');
+      setIsLoading(false);
+    }
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     setIsLoading(true);
     
-    // Create mock user data for Google login
-    const mockUser = {
-      id: 'google-' + Date.now(),
-      email: 'google-user@example.com',
-      name: 'Google User'
-    };
-    
-    const mockToken = 'google-token-' + Date.now();
-    
-    // Simulate network delay
-    setTimeout(() => {
+    try {
+      // Create mock user data for Google login
+      const mockUser = {
+        id: 'google-' + Date.now(),
+        email: 'google-user-' + Date.now() + '@gmail.com',
+        name: 'Google User'
+      };
+      
+      const mockToken = 'google-token-' + Date.now();
+      
       // Store mock data
       localStorage.setItem('token', mockToken);
       localStorage.setItem('user', JSON.stringify(mockUser));
       
       toast.success('Google login successful!');
-      router.push('/dashboard');
-    }, 1000);
+      
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 500);
+    } catch (error) {
+      console.error('Google login error:', error);
+      toast.error('Google login failed');
+      setIsLoading(false);
+    }
   };
 
-  const handleAppleLogin = () => {
+  const handleAppleLogin = async () => {
     setIsLoading(true);
     
-    // Create mock user data for Apple login
-    const mockUser = {
-      id: 'apple-' + Date.now(),
-      email: 'apple-user@example.com',
-      name: 'Apple User'
-    };
-    
-    const mockToken = 'apple-token-' + Date.now();
-    
-    // Simulate network delay
-    setTimeout(() => {
+    try {
+      // Create mock user data for Apple login
+      const mockUser = {
+        id: 'apple-' + Date.now(),
+        email: 'apple-user-' + Date.now() + '@icloud.com',
+        name: 'Apple User'
+      };
+      
+      const mockToken = 'apple-token-' + Date.now();
+      
       // Store mock data
       localStorage.setItem('token', mockToken);
       localStorage.setItem('user', JSON.stringify(mockUser));
       
       toast.success('Apple login successful!');
-      router.push('/dashboard');
-    }, 1000);
+      
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 500);
+    } catch (error) {
+      console.error('Apple login error:', error);
+      toast.error('Apple login failed');
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -178,7 +200,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Social Buttons - Fixed Layout */}
+          {/* Social Buttons */}
           <div className="space-y-3">
             <button
               type="button"
