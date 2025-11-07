@@ -1,12 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { generateToken, hashPassword } from '@/lib/auth';
+import { generateToken } from '@/lib/auth';
+import { NextRequest, NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, name, googleId, picture } = await request.json();
+    const { email, name, googleId } = await request.json();
 
     if (!email || !googleId) {
       return NextResponse.json(
@@ -20,15 +20,22 @@ export async function POST(request: NextRequest) {
       where: { email: email.toLowerCase() },
     });
 
+    // If user doesn't exist, create one
     if (!user) {
-      // Create new user
       user = await prisma.user.create({
         data: {
           email: email.toLowerCase(),
           name: name || 'Google User',
-          password: await hashPassword(googleId), // Use Google ID as password hash
+          googleId,
           emailVerified: true,
+          password: '', // No password for OAuth users
         },
+      });
+    } else if (!user.googleId) {
+      // Update existing user with Google ID
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: { googleId },
       });
     }
 
@@ -36,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       {
-        message: 'Login successful',
+        message: 'Google login successful',
         user: {
           id: user.id,
           email: user.email,
@@ -49,7 +56,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Google auth error:', error);
     return NextResponse.json(
-      { error: 'Authentication failed' },
+      { error: 'Google authentication failed' },
       { status: 500 }
     );
   }

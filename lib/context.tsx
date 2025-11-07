@@ -21,8 +21,8 @@ interface AuthContextType {
   token: string | null;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, name: string) => Promise<void>;
-  loginWithGoogle: (email: string, name: string, googleId: string) => Promise<void>;
-  loginWithApple: (email: string, name: string, appleId: string) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
+  loginWithApple: () => Promise<void>;
   logout: () => void;
   updateProfile: (data: Partial<User>) => Promise<void>;
   isLoading: boolean;
@@ -83,42 +83,112 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('user', JSON.stringify(data.user));
   };
 
-  const loginWithGoogle = async (email: string, name: string, googleId: string) => {
-    const response = await fetch('/api/auth/google', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, name, googleId }),
-    });
+  const loginWithGoogle = async () => {
+    try {
+      // Initialize Google Sign-In
+      if (typeof window !== 'undefined' && (window as any).google) {
+        const google = (window as any).google;
+        
+        // Use Google Sign-In
+        google.accounts.id.initialize({
+          client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '',
+          callback: async (response: any) => {
+            try {
+              // Decode the JWT token to get user info
+              const base64Url = response.credential.split('.')[1];
+              const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+              const jsonPayload = decodeURIComponent(
+                atob(base64)
+                  .split('')
+                  .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                  .join('')
+              );
+              const userInfo = JSON.parse(jsonPayload);
 
-    const data = await response.json();
+              // Send to backend
+              const res = await fetch('/api/auth/google', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  email: userInfo.email,
+                  name: userInfo.name,
+                  googleId: userInfo.sub,
+                }),
+              });
 
-    if (!response.ok) {
-      throw new Error(data.error || 'Google login failed');
+              const data = await res.json();
+
+              if (!res.ok) {
+                throw new Error(data.error || 'Google login failed');
+              }
+
+              setToken(data.token);
+              setUser(data.user);
+              localStorage.setItem('token', data.token);
+              localStorage.setItem('user', JSON.stringify(data.user));
+            } catch (error) {
+              console.error('Google login error:', error);
+              throw error;
+            }
+          },
+        });
+
+        // Trigger the sign-in dialog
+        google.accounts.id.renderButton(
+          document.getElementById('google-signin-button'),
+          { theme: 'outline', size: 'large' }
+        );
+      }
+    } catch (error) {
+      console.error('Google login failed:', error);
+      throw error;
     }
-
-    setToken(data.token);
-    setUser(data.user);
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
   };
 
-  const loginWithApple = async (email: string, name: string, appleId: string) => {
-    const response = await fetch('/api/auth/apple', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, name, appleId }),
-    });
+  const loginWithApple = async () => {
+    try {
+      // Initialize Apple Sign-In
+      if (typeof window !== 'undefined' && (window as any).AppleID) {
+        const AppleID = (window as any).AppleID;
+        
+        AppleID.auth.init({
+          clientId: process.env.NEXT_PUBLIC_APPLE_CLIENT_ID || '',
+          teamId: process.env.NEXT_PUBLIC_APPLE_TEAM_ID || '',
+          keyId: process.env.NEXT_PUBLIC_APPLE_KEY_ID || '',
+          redirectURI: `${window.location.origin}/auth/apple-callback`,
+          usePopup: true,
+        });
 
-    const data = await response.json();
+        const response = await AppleID.auth.signIn();
 
-    if (!response.ok) {
-      throw new Error(data.error || 'Apple login failed');
+        if (response.authorization) {
+          // Send to backend
+          const res = await fetch('/api/auth/apple', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: response.user?.email || '',
+              name: response.user?.name?.firstName + ' ' + response.user?.name?.lastName || 'Apple User',
+              appleId: response.user?.email || '',
+            }),
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            throw new Error(data.error || 'Apple login failed');
+          }
+
+          setToken(data.token);
+          setUser(data.user);
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+        }
+      }
+    } catch (error) {
+      console.error('Apple login failed:', error);
+      throw error;
     }
-
-    setToken(data.token);
-    setUser(data.user);
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
   };
 
   const logout = () => {
@@ -148,7 +218,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, signup, loginWithGoogle, loginWithApple, logout, updateProfile, isLoading }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        login,
+        signup,
+        loginWithGoogle,
+        loginWithApple,
+        logout,
+        updateProfile,
+        isLoading,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -156,8 +238,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 }

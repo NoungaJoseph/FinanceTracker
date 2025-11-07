@@ -2,104 +2,10 @@
 > finance-dashboard-pro@0.1.0 dev
 > next dev --turbopack
 
- ⚠ Port 3000 is in use by an unknown process, using available port 3001 instead.
    ▲ Next.js 15.5.6 (Turbopack)
-   - Local:        http://localhost:3001
-   - Network:      http://169. ○ Compiling /api/auth/signup ...
- ✓ Compiled /api/auth/signup in 3.1s
- POST /api/auth/signup 201 in 4054ms
- POST /api/auth/signup 201 in 496ms
-T / 200 in 153ms
- GET / 200 in 141ms
- GET / 200 in 134ms
- ○ Compiling /favicon.ico ...
- GET /favicon.ico?favicon.bf3c9292.ico 200 in 914ms
- ✓ Compiled /favicon.ico in 1007ms
- GET /auth/signup 200 in 754ms
- ⚠ Cross origin request detected from finance-dashboard-pro.lindy.site to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
-Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
- ✓ Compiled /api/auth/signup in 391ms
- POST /api/auth/signup 201 in 1071ms
- ○ Compiling /dashboard ...
- ✓ Compiled /dashboard in 754ms
- GET /dashboard 200 in 852ms
- ✓ Compiled /api/transactions in 289ms
- GET /api/goals 200 in 791ms
- GET /api/transactions 200 in 807ms
- GET /api/goals 200 in 266ms
- GET /api/transactions 200 in 270ms
- GET / 200 in 399ms
- POST /api/auth/signup 201 in 481ms
- POST /api/auth/signup 201 in 494ms
- GET / 200 in 592ms
- GET /dashboard 200 in 146ms
- GET /api/transactions 200 in 415ms
- GET /api/goals 200 in 412ms
- GET /api/transactions 200 in 331ms
- GET /api/goals 200 in 320ms
- ○ Compiling /settings ...
- GET /auth/login 200 in 1869ms
- ✓ Compiled /settings in 2.1s
- GET /settings 200 in 2282ms
- GET /auth/login 200 in 113ms
- GET /settings 200 in 143ms
- GET /settings 200 in 120ms
- GET /settings 200 in 99ms
- GET /settings 200 in 100ms
- GET /settings 200 in 84ms
- GET /settings 200 in 98ms
- GET /settings 200 in 87ms
- GET /settings 200 in 115ms
- GET /settings 200 in 97ms
- GET /settings 200 in 103ms
- GET /auth/login 200 in 120ms
- GET /auth/login 200 in 92ms
- GET /auth/login 200 in 418ms
- GET /auth/signup 200 in 165ms
- POST /api/auth/signup 201 in 613ms
- GET /dashboard 200 in 154ms
- GET /api/goals 200 in 393ms
- GET /api/transactions 200 in 431ms
- GET /api/goals 200 in 280ms
- GET /api/transactions 200 in 281ms
- ○ Compiling /api/ai/chat ...
- ✓ Compiled /api/ai/chat in 689ms
- ⨯ ./app/api/ai/chat/route.ts:86:25
-Parsing ecmascript source code failed
-[0m [90m 84 |[39m [32m[39m
- [90m 85 |[39m [32mRecent Transactions:[39m
-[31m[1m>[22m[39m[90m 86 |[39m [32m${transactions.map(t => \`- \${t.description}: $\${t.amount} (\${t.type})\`).join('\n')}[39m
- [90m    |[39m                         [31m[1m^[22m[39m
- [90m 87 |[39m [32m[39m
- [90m 88 |[39m [32mActive Goals:[39m
- [90m 89 |[39m [32m${goals.map(g => \`- \${g.name}: $\${g.currentAmount}/$\${g.targetAmount}\`).join('\n')}[39m[0m
+   - Local:        http://localhost:3000
+   - Network:      http://169.254.0.21:3000
+   - Environments: .env.local
 
-Expected unicode escape
-
-
- ○ Compiling /_error ...
- ✓ Compiled /_error in 3.4s
- POST /api/ai/chat 500 in 4599ms
- GET /settings 200 in 107ms
- GET /settings 200 in 117ms
- ✓ Compiled /api/user/profile in 261ms
- PUT /api/user/profile 500 in 366ms
- GET /api/transactions 500 in 187ms
- GET /api/goals 500 in 198ms
- GET /api/transactions 500 in 215ms
- GET /api/goals 500 in 220ms
- ⨯ ./app/api/ai/chat/route.ts:86:25
-Parsing ecmascript source code failed
-[0m [90m 84 |[39m [32m[39m
- [90m 85 |[39m [32mRecent Transactions:[39m
-[31m[1m>[22m[39m[90m 86 |[39m [32m${transactions.map(t => \`- \${t.description}: $\${t.amount} (\${t.type})\`).join('\n')}[39m
- [90m    |[39m                         [31m[1m^[22m[39m
- [90m 87 |[39m [32m[39m
- [90m 88 |[39m [32mActive Goals:[39m
- [90m 89 |[39m [32m${goals.map(g => \`- \${g.name}: $\${g.currentAmount}/$\${g.targetAmount}\`).join('\n')}[39m[0m
-
-Expected unicode escape
-
-
- POST /api/ai/chat 500 in 848ms
- ✓ Compiled in 933ms
+ ✓ Starting...
+ ✓ Ready in 2.4s

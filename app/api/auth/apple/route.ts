@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { generateToken, hashPassword } from '@/lib/auth';
+import { generateToken } from '@/lib/auth';
+import { NextRequest, NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
 
@@ -20,15 +20,22 @@ export async function POST(request: NextRequest) {
       where: { email: email.toLowerCase() },
     });
 
+    // If user doesn't exist, create one
     if (!user) {
-      // Create new user
       user = await prisma.user.create({
         data: {
           email: email.toLowerCase(),
           name: name || 'Apple User',
-          password: await hashPassword(appleId), // Use Apple ID as password hash
+          appleId,
           emailVerified: true,
+          password: '', // No password for OAuth users
         },
+      });
+    } else if (!user.appleId) {
+      // Update existing user with Apple ID
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: { appleId },
       });
     }
 
@@ -36,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       {
-        message: 'Login successful',
+        message: 'Apple login successful',
         user: {
           id: user.id,
           email: user.email,
@@ -49,7 +56,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Apple auth error:', error);
     return NextResponse.json(
-      { error: 'Authentication failed' },
+      { error: 'Apple authentication failed' },
       { status: 500 }
     );
   }
