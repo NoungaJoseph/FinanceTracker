@@ -25,3 +25,28 @@ Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allow
  ✓ Compiled /auth/survey in 2.1s
  GET /auth/survey 200 in 2334ms
  ✓ Compiled in 698ms
+ ○ Compiling /api/user/profile ...
+ ✓ Compiled /api/user/profile in 579ms
+ PUT /api/user/profile 200 in 1460ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 3.4s
+ GET /dashboard 200 in 3744ms
+ ○ Compiling /api/transactions ...
+ ✓ Compiled /api/transactions in 1237ms
+ GET /api/transactions 200 in 1703ms
+ GET /api/goals 200 in 1640ms
+ GET /api/transactions 200 in 502ms
+ GET /api/goals 200 in 573ms
+ ○ Compiling /settings ...
+ ✓ Compiled /settings in 4.2s
+ GET /settings 200 in 4425ms
+ GET /api/transactions 200 in 410ms
+ GET /api/goals 200 in 415ms
+ GET /api/transactions 200 in 384ms
+ GET /api/goals 200 in 562ms
+ ✓ Compiled /api/ai/chat in 499ms
+ POST /api/ai/chat 200 in 999ms
+ ✓ Compiled in 485ms
+ POST /api/ai/chat 200 in 531ms
+ POST /api/ai/chat 200 in 476ms
+ POST /api/ai/chat 200 in 508ms
