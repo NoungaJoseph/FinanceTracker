@@ -1,36 +1,288 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Finance Dashboard Pro 💰
 
-## Getting Started
+A production-ready personal finance management application with AI-powered financial advice, built with Next.js, PostgreSQL, and Claude AI.
 
-First, run the development server:
+## 🌟 Features
+
+### Authentication & User Management
+- ✅ Secure user registration and login
+- ✅ Password hashing with bcryptjs
+- ✅ JWT-based authentication
+- ✅ User profile management
+- ✅ Personalized onboarding questionnaire
+
+### Financial Tracking
+- ✅ Add, edit, and delete transactions
+- ✅ Categorize income and expenses
+- ✅ Real-time balance calculations
+- ✅ Transaction history and filtering
+- ✅ Multiple expense categories
+
+### Financial Goals
+- ✅ Create and track financial goals
+- ✅ Visual progress bars
+- ✅ Goal completion tracking
+- ✅ Target date management
+- ✅ Multiple goal categories
+
+### AI Financial Advisor
+- ✅ Claude AI-powered financial advice
+- ✅ Personalized recommendations based on user profile
+- ✅ Conversation history
+- ✅ Context-aware responses using financial data
+- ✅ Real-time chat interface
+
+### Dashboard
+- ✅ Key metrics cards (Income, Expenses, Balance)
+- ✅ Transaction overview
+- ✅ Goals progress visualization
+- ✅ Dark mode support
+- ✅ Responsive design
+
+## 🛠️ Technology Stack
+
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Styling**: Tailwind CSS, shadcn/ui
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: JWT, bcryptjs
+- **AI**: Claude API (Anthropic)
+- **State Management**: React Context API
+- **UI Components**: shadcn/ui
+- **Notifications**: Sonner
+- **Theme**: next-themes
+
+## 📋 Prerequisites
+
+- Node.js 18+ or Bun
+- PostgreSQL 12+
+- Claude API key from Anthropic
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/NoungaJoseph/finance-dashboard-pro.git
+cd finance-dashboard-pro
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install Dependencies
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+bun install
+# or
+npm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Set Up Environment Variables
 
-## Learn More
+Create a `.env.local` file in the root directory:
 
-To learn more about Next.js, take a look at the following resources:
+```env
+DATABASE_URL="postgresql://user:password@localhost:5432/finance_dashboard_pro"
+NEXTAUTH_SECRET="your-secret-key-here"
+NEXTAUTH_URL="http://localhost:3000"
+ANTHROPIC_API_KEY="your-claude-api-key"
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 4. Set Up Database
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# Create the database
+createdb finance_dashboard_pro
 
-## Deploy on Vercel
+# Run migrations
+bunx prisma migrate dev --name init
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 5. Run Development Server
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+bun dev
+# or
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 📚 Project Structure
+
+```
+finance-dashboard-pro/
+├── app/
+│   ├── api/                    # API routes
+│   │   ├── auth/              # Authentication endpoints
+│   │   ├── transactions/      # Transaction management
+│   │   ├── goals/             # Financial goals
+│   │   ├── ai/                # AI assistant
+│   │   └── user/              # User profile
+│   ├── auth/                  # Auth pages (login, signup)
+│   ├── dashboard/             # Main dashboard
+│   ├── onboarding/            # User onboarding
+│   ├── settings/              # User settings
+│   └── layout.tsx             # Root layout
+├── components/
+│   ├── ai/                    # AI assistant component
+│   └── ui/                    # shadcn/ui components
+├── lib/
+│   ├── auth.ts               # Authentication utilities
+│   ├── context.tsx           # Auth context provider
+│   └── utils.ts              # Utility functions
+├── prisma/
+│   └── schema.prisma         # Database schema
+└── public/                   # Static assets
+```
+
+## 🔐 Authentication Flow
+
+1. **Signup**: User creates account with email and password
+2. **Onboarding**: User answers personal finance questions
+3. **Login**: User logs in with credentials
+4. **JWT Token**: Token stored in localStorage for API requests
+5. **Protected Routes**: Dashboard and settings require authentication
+
+## 💬 AI Assistant Features
+
+The AI assistant uses Claude to provide personalized financial advice based on:
+
+- User's occupation and income
+- Household size and living situation
+- Financial goals and risk tolerance
+- Recent transactions and spending patterns
+- Current financial goals
+
+### Example Interactions
+
+- "What are some tips to save money?"
+- "How should I budget my income?"
+- "What's a good emergency fund amount?"
+- "How can I reach my financial goals faster?"
+
+## 📊 Database Schema
+
+### User Model
+- Email, password, name
+- Occupation, income, household size
+- Living situation, location
+- Risk tolerance, savings rate, monthly budget
+
+### Transaction Model
+- Description, category, amount
+- Date, type (income/expense)
+- User reference
+
+### FinancialGoal Model
+- Name, target amount, current amount
+- Target date, category
+- User reference
+
+### AIConversation & AIMessage Models
+- Conversation history
+- Message role (user/assistant)
+- Timestamps
+
+## 🔒 Security Features
+
+- ✅ Password hashing with bcryptjs
+- ✅ JWT authentication
+- ✅ Protected API routes
+- ✅ Environment variable protection
+- ✅ HTTPS on production
+- ✅ No sensitive data in localStorage
+
+## 🎨 UI/UX Features
+
+- ✅ Clean, minimalist design
+- ✅ Dark mode support
+- ✅ Responsive layout (mobile, tablet, desktop)
+- ✅ Smooth animations
+- ✅ Toast notifications
+- ✅ Loading states
+- ✅ Error handling
+
+## 📱 Responsive Design
+
+The application is fully responsive and works on:
+- Desktop (1920px and above)
+- Tablet (768px - 1024px)
+- Mobile (320px - 767px)
+
+## 🚢 Deployment
+
+### Deploy to Vercel
+
+```bash
+vercel deploy
+```
+
+### Deploy to Other Platforms
+
+1. Build the application:
+```bash
+bun run build
+```
+
+2. Start the production server:
+```bash
+bun run start
+```
+
+## 📝 API Endpoints
+
+### Authentication
+- `POST /api/auth/signup` - Create new account
+- `POST /api/auth/login` - Login user
+
+### Transactions
+- `GET /api/transactions` - Get all transactions
+- `POST /api/transactions` - Create transaction
+
+### Goals
+- `GET /api/goals` - Get all goals
+- `POST /api/goals` - Create goal
+
+### AI Assistant
+- `POST /api/ai/chat` - Send message to AI
+
+### User Profile
+- `GET /api/user/profile` - Get user profile
+- `PUT /api/user/profile` - Update user profile
+
+## 🐛 Troubleshooting
+
+### Database Connection Error
+- Ensure PostgreSQL is running
+- Check DATABASE_URL in .env.local
+- Verify database exists
+
+### AI Assistant Not Responding
+- Check ANTHROPIC_API_KEY is valid
+- Verify API key has sufficient credits
+- Check network connection
+
+### Authentication Issues
+- Clear localStorage and try again
+- Verify NEXTAUTH_SECRET is set
+- Check token expiration
+
+## 📄 License
+
+MIT License - feel free to use this project for personal or commercial purposes.
+
+## 👤 Author
+
+Nounga Joseph - [GitHub](https://github.com/NoungaJoseph)
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📞 Support
+
+For support, email noungajoseph58@gmail.com or open an issue on GitHub.
+
+---
+
+**Live Demo**: https://finance-dashboard-pro.lindy.site
+
+**Repository**: https://github.com/NoungaJoseph/finance-dashboard-pro
