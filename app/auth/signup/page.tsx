@@ -1,15 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/context';
-import { toast } from 'sonner';
 import Link from 'next/link';
 import { Mail, Lock, User } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function SignupPage() {
   const router = useRouter();
-  const { signup, loginWithGoogle, loginWithApple } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -19,6 +17,16 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
+
+  // Prevent form submission errors by disabling the default form action
+  useEffect(() => {
+    const form = document.querySelector('form');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+      });
+    }
+  }, []);
 
   const calculatePasswordStrength = (password: string) => {
     let strength = 0;
@@ -35,7 +43,7 @@ export default function SignupPage() {
     setPasswordStrength(calculatePasswordStrength(password));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!agreeToTerms) {
@@ -55,85 +63,70 @@ export default function SignupPage() {
 
     setIsLoading(true);
     
-    try {
-      // DEMO MODE: Skip API call and use mock data directly
-      setTimeout(() => {
-        // Create mock user data
-        const mockUser = {
-          id: 'user-' + Date.now(),
-          email: formData.email,
-          name: formData.name
-        };
-        
-        const mockToken = 'token-' + Date.now();
-        
-        // Store mock data
-        localStorage.setItem('token', mockToken);
-        localStorage.setItem('user', JSON.stringify(mockUser));
-        
-        toast.success('Account created successfully!');
-        router.push('/auth/survey');
-      }, 1000); // Simulate network delay
-    } catch (error: any) {
-      console.error('Signup error:', error);
-      const errorMessage = error?.message || 'Failed to create account. Please try again.';
-      toast.error(errorMessage);
-      setIsLoading(false);
-    }
+    // Create mock user data
+    const mockUser = {
+      id: 'user-' + Date.now(),
+      email: formData.email,
+      name: formData.name
+    };
+    
+    const mockToken = 'token-' + Date.now();
+    
+    // Simulate network delay
+    setTimeout(() => {
+      // Store mock data
+      localStorage.setItem('token', mockToken);
+      localStorage.setItem('user', JSON.stringify(mockUser));
+      
+      toast.success('Account created successfully!');
+      router.push('/auth/survey');
+    }, 1000);
   };
 
-  const handleGoogleSignup = async () => {
-    try {
-      setIsLoading(true);
+  const handleGoogleSignup = () => {
+    setIsLoading(true);
+    
+    // Create mock user data for Google login
+    const mockUser = {
+      id: 'google-' + Date.now(),
+      email: 'google-user@example.com',
+      name: 'Google User'
+    };
+    
+    const mockToken = 'google-token-' + Date.now();
+    
+    // Simulate network delay
+    setTimeout(() => {
+      // Store mock data
+      localStorage.setItem('token', mockToken);
+      localStorage.setItem('user', JSON.stringify(mockUser));
       
-      // Create mock user data for Google login
-      setTimeout(() => {
-        const mockUser = {
-          id: 'google-' + Date.now(),
-          email: 'google-user@example.com',
-          name: 'Google User'
-        };
-        
-        const mockToken = 'google-token-' + Date.now();
-        
-        // Store mock data
-        localStorage.setItem('token', mockToken);
-        localStorage.setItem('user', JSON.stringify(mockUser));
-        
-        toast.success('Google login successful!');
-        router.push('/auth/survey');
-      }, 1000); // Simulate network delay
-    } catch (error: any) {
-      toast.error('Google signup failed');
-      setIsLoading(false);
-    }
+      toast.success('Google login successful!');
+      router.push('/auth/survey');
+    }, 1000);
   };
 
-  const handleAppleSignup = async () => {
-    try {
-      setIsLoading(true);
+  const handleAppleSignup = () => {
+    setIsLoading(true);
+    
+    // Create mock user data for Apple login
+    const mockUser = {
+      id: 'apple-' + Date.now(),
+      email: 'apple-user@example.com',
+      name: 'Apple User'
+    };
+    
+    const mockToken = 'apple-token-' + Date.now();
+    
+    // Simulate network delay
+    setTimeout(() => {
+      // Store mock data
+      localStorage.setItem('token', mockToken);
+      localStorage.setItem('user', JSON.stringify(mockUser));
       
-      // Create mock user data for Apple login
-      setTimeout(() => {
-        const mockUser = {
-          id: 'apple-' + Date.now(),
-          email: 'apple-user@example.com',
-          name: 'Apple User'
-        };
-        
-        const mockToken = 'apple-token-' + Date.now();
-        
-        // Store mock data
-        localStorage.setItem('token', mockToken);
-        localStorage.setItem('user', JSON.stringify(mockUser));
-        
-        toast.success('Apple login successful!');
-        router.push('/auth/survey');
-      }, 1000); // Simulate network delay
-    } catch (error: any) {
-      toast.error('Apple signup failed');
-      setIsLoading(false);
-    }
+      toast.success('Apple login successful!');
+      router.push('/auth/survey');
+    }, 1000);
   };
 
   const getPasswordStrengthText = () => {
@@ -276,7 +269,8 @@ export default function SignupPage() {
 
             {/* Submit Button */}
             <button
-              type="submit"
+              type="button" // Changed from submit to button to avoid form submission
+              onClick={handleSubmit}
               disabled={isLoading}
               className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
             >

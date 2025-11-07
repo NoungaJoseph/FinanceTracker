@@ -56,3 +56,4 @@ Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allow
  GET /api/transactions 200 in 462ms
  GET /api/goals 200 in 483ms
  ✓ Compiled in 383ms
+ ✓ Compiled in 604ms

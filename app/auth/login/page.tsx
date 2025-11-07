@@ -1,15 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/context';
-import { toast } from 'sonner';
 import Link from 'next/link';
 import { Mail, Lock } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, loginWithGoogle, loginWithApple } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -17,7 +15,17 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Prevent form submission errors by disabling the default form action
+  useEffect(() => {
+    const form = document.querySelector('form');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+      });
+    }
+  }, []);
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.email || !formData.password) {
@@ -27,85 +35,70 @@ export default function LoginPage() {
 
     setIsLoading(true);
     
-    try {
-      // DEMO MODE: Skip API call and use mock data directly
-      setTimeout(() => {
-        // Create mock user data
-        const mockUser = {
-          id: 'user-' + Date.now(),
-          email: formData.email,
-          name: formData.email.split('@')[0]
-        };
-        
-        const mockToken = 'token-' + Date.now();
-        
-        // Store mock data
-        localStorage.setItem('token', mockToken);
-        localStorage.setItem('user', JSON.stringify(mockUser));
-        
-        toast.success('Logged in successfully!');
-        router.push('/dashboard');
-      }, 1000); // Simulate network delay
-    } catch (error: any) {
-      console.error('Login error:', error);
-      const errorMessage = error?.message || 'Failed to login. Please try again.';
-      toast.error(errorMessage);
-      setIsLoading(false);
-    }
+    // Create mock user data
+    const mockUser = {
+      id: 'user-' + Date.now(),
+      email: formData.email,
+      name: formData.email.split('@')[0]
+    };
+    
+    const mockToken = 'token-' + Date.now();
+    
+    // Simulate network delay
+    setTimeout(() => {
+      // Store mock data
+      localStorage.setItem('token', mockToken);
+      localStorage.setItem('user', JSON.stringify(mockUser));
+      
+      toast.success('Logged in successfully!');
+      router.push('/dashboard');
+    }, 1000);
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      setIsLoading(true);
+  const handleGoogleLogin = () => {
+    setIsLoading(true);
+    
+    // Create mock user data for Google login
+    const mockUser = {
+      id: 'google-' + Date.now(),
+      email: 'google-user@example.com',
+      name: 'Google User'
+    };
+    
+    const mockToken = 'google-token-' + Date.now();
+    
+    // Simulate network delay
+    setTimeout(() => {
+      // Store mock data
+      localStorage.setItem('token', mockToken);
+      localStorage.setItem('user', JSON.stringify(mockUser));
       
-      // Create mock user data for Google login
-      setTimeout(() => {
-        const mockUser = {
-          id: 'google-' + Date.now(),
-          email: 'google-user@example.com',
-          name: 'Google User'
-        };
-        
-        const mockToken = 'google-token-' + Date.now();
-        
-        // Store mock data
-        localStorage.setItem('token', mockToken);
-        localStorage.setItem('user', JSON.stringify(mockUser));
-        
-        toast.success('Google login successful!');
-        router.push('/dashboard');
-      }, 1000); // Simulate network delay
-    } catch (error: any) {
-      toast.error('Google login failed');
-      setIsLoading(false);
-    }
+      toast.success('Google login successful!');
+      router.push('/dashboard');
+    }, 1000);
   };
 
-  const handleAppleLogin = async () => {
-    try {
-      setIsLoading(true);
+  const handleAppleLogin = () => {
+    setIsLoading(true);
+    
+    // Create mock user data for Apple login
+    const mockUser = {
+      id: 'apple-' + Date.now(),
+      email: 'apple-user@example.com',
+      name: 'Apple User'
+    };
+    
+    const mockToken = 'apple-token-' + Date.now();
+    
+    // Simulate network delay
+    setTimeout(() => {
+      // Store mock data
+      localStorage.setItem('token', mockToken);
+      localStorage.setItem('user', JSON.stringify(mockUser));
       
-      // Create mock user data for Apple login
-      setTimeout(() => {
-        const mockUser = {
-          id: 'apple-' + Date.now(),
-          email: 'apple-user@example.com',
-          name: 'Apple User'
-        };
-        
-        const mockToken = 'apple-token-' + Date.now();
-        
-        // Store mock data
-        localStorage.setItem('token', mockToken);
-        localStorage.setItem('user', JSON.stringify(mockUser));
-        
-        toast.success('Apple login successful!');
-        router.push('/dashboard');
-      }, 1000); // Simulate network delay
-    } catch (error: any) {
-      toast.error('Apple login failed');
-      setIsLoading(false);
-    }
+      toast.success('Apple login successful!');
+      router.push('/dashboard');
+    }, 1000);
   };
 
   return (
@@ -177,7 +170,8 @@ export default function LoginPage() {
 
             {/* Submit Button */}
             <button
-              type="submit"
+              type="button" // Changed from submit to button to avoid form submission
+              onClick={handleSubmit}
               disabled={isLoading}
               className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 mt-6"
             >
