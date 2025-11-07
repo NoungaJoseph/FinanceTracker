@@ -27,7 +27,36 @@ export default function LoginPage() {
 
     setIsLoading(true);
     try {
-      await login(formData.email, formData.password);
+      // Try to login the user
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        }),
+      });
+
+      // Check if the response is JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        // Handle non-JSON response (likely HTML error page)
+        toast.error('Server error. Please try again later.');
+        console.error('Server returned non-JSON response');
+        setIsLoading(false);
+        return;
+      }
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
+      }
+
+      // Set user data in context
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      
       toast.success('Logged in successfully!');
       router.push('/dashboard');
     } catch (error: any) {

@@ -2,10 +2,26 @@
 > finance-dashboard-pro@0.1.0 dev
 > next dev --turbopack
 
+ ⚠ Port 3000 is in use by an unknown process, using available port 3001 instead.
    ▲ Next.js 15.5.6 (Turbopack)
-   - Local:        http://localhost:3000
-   - Network:      http://169.254.0.21:3000
+   - Local:        http://localhost:3001
+   - Network:      http://169.254.0.21:3001
    - Environments: .env.local
 
  ✓ Starting...
- ✓ Ready in 2.4s
+ ✓ Ready in 3.8s
+ ○ Compiling /auth/signup ...
+ ✓ Compiled /auth/signup in 15s
+ GET /auth/signup 200 in 16461ms
+ ○ Compiling /favicon.ico ...
+ ⚠ Cross origin request detected from finance-dashboard-pro.lindy.site to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ ✓ Compiled /favicon.ico in 1673ms
+ GET /favicon.ico?favicon.bf3c9292.ico 200 in 2151ms
+ ○ Compiling /api/auth/signup ...
+ ✓ Compiled /api/auth/signup in 1738ms
+ POST /api/auth/signup 201 in 3340ms
+ ○ Compiling /auth/survey ...
+ ✓ Compiled /auth/survey in 2.1s
+ GET /auth/survey 200 in 2334ms
+ ✓ Compiled in 698ms

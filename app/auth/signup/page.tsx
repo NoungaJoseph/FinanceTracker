@@ -55,7 +55,37 @@ export default function SignupPage() {
 
     setIsLoading(true);
     try {
-      await signup(formData.email, formData.password, formData.name);
+      // Try to sign up the user
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          name: formData.name
+        }),
+      });
+
+      // Check if the response is JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        // Handle non-JSON response (likely HTML error page)
+        toast.error('Server error. Please try again later.');
+        console.error('Server returned non-JSON response');
+        setIsLoading(false);
+        return;
+      }
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Signup failed');
+      }
+
+      // Set user data in context
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      
       toast.success('Account created successfully!');
       router.push('/auth/survey');
     } catch (error: any) {
@@ -90,8 +120,6 @@ export default function SignupPage() {
       toast.info('Apple OAuth would be configured with your credentials');
       // You would typically redirect to Apple OAuth here
       // window.location.href = '/api/auth/apple';
-    } catch (error: any) {
-      toast.error('Apple signup failed');
     } finally {
       setIsLoading(false);
     }
