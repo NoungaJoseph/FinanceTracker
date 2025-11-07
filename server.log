@@ -1,0 +1,56 @@
+$ next dev --turbopack
+ ⚠ Port 3000 is in use by an unknown process, using available port 3001 instead.
+   ▲ Next.js 15.5.6 (Turbopack)
+   - Local:        http://localhost:3001
+   - Network:      http://169.254.0.21:3001
+
+ ✓ Starting...
+ ✓ Ready in 2.4s
+   Reload env: .env.local
+   Reload env: .env.local
+ ○ Compiling / ...
+ ✓ Compiled / in 4.6s
+ GET / 200 in 5313ms
+ GET / 200 in 1725ms
+ ⚠ Cross origin request detected from finance-dashboard-pro.lindy.site to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ ○ Compiling /favicon.ico ...
+ GET /favicon.ico?favicon.bf3c9292.ico 200 in 1120ms
+ ✓ Compiled /favicon.ico in 1255ms
+ GET /auth/login 200 in 1275ms
+ GET /auth/login 200 in 84ms
+ ○ Compiling /auth/signup ...
+ ✓ Compiled /auth/signup in 502ms
+ GET /auth/signup 200 in 595ms
+ ✓ Compiled /api/auth/signup in 418ms
+ POST /api/auth/signup 201 in 1064ms
+ ○ Compiling /onboarding ...
+ ✓ Compiled /onboarding in 1226ms
+ GET /onboarding 200 in 1309ms
+ ✓ Compiled /api/user/profile in 222ms
+ PUT /api/user/profile 200 in 690ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 731ms
+ GET /dashboard 200 in 826ms
+ ✓ Compiled /api/transactions in 296ms
+ GET /api/goals 200 in 705ms
+ GET /api/transactions 200 in 716ms
+ GET /api/transactions 200 in 308ms
+ GET /api/goals 200 in 310ms
+ ✓ Compiled /api/ai/chat in 199ms
+ ⨯ ./app/api/ai/chat/route.ts:86:25
+Parsing ecmascript source code failed
+[0m [90m 84 |[39m [32m[39m
+ [90m 85 |[39m [32mRecent Transactions:[39m
+[31m[1m>[22m[39m[90m 86 |[39m [32m${transactions.map(t => \`- \${t.description}: $\${t.amount} (\${t.type})\`).join('\n')}[39m
+ [90m    |[39m                         [31m[1m^[22m[39m
+ [90m 87 |[39m [32m[39m
+ [90m 88 |[39m [32mActive Goals:[39m
+ [90m 89 |[39m [32m${goals.map(g => \`- \${g.name}: $\${g.currentAmount}/$\${g.targetAmount}\`).join('\n')}[39m[0m
+
+Expected unicode escape
+
+
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 2.8s
+ POST /api/ai/chat 500 in 3253ms
