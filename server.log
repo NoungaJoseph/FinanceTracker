@@ -50,3 +50,9 @@ Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allow
  POST /api/ai/chat 200 in 531ms
  POST /api/ai/chat 200 in 476ms
  POST /api/ai/chat 200 in 508ms
+ GET /settings 200 in 462ms
+ GET /api/transactions 200 in 435ms
+ GET /api/goals 200 in 439ms
+ GET /api/transactions 200 in 462ms
+ GET /api/goals 200 in 483ms
+ ✓ Compiled in 383ms

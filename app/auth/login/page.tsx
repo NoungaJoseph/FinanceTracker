@@ -26,58 +26,30 @@ export default function LoginPage() {
     }
 
     setIsLoading(true);
+    
     try {
-      // Try to login the user
-      try {
-        const response = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: formData.email,
-            password: formData.password
-          }),
-        });
-
-        // Check if the response is JSON
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-          // If server returns HTML instead of JSON, use mock data
-          throw new Error('Server returned non-JSON response');
-        }
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || 'Login failed');
-        }
-
-        // Set user data in context
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-      } catch (error) {
-        console.error('API error, using mock data instead:', error);
-        
+      // DEMO MODE: Skip API call and use mock data directly
+      setTimeout(() => {
         // Create mock user data
         const mockUser = {
-          id: 'mock-' + Date.now(),
+          id: 'user-' + Date.now(),
           email: formData.email,
           name: formData.email.split('@')[0]
         };
         
-        const mockToken = 'mock-token-' + Date.now();
+        const mockToken = 'token-' + Date.now();
         
         // Store mock data
         localStorage.setItem('token', mockToken);
         localStorage.setItem('user', JSON.stringify(mockUser));
-      }
-      
-      toast.success('Logged in successfully!');
-      router.push('/dashboard');
+        
+        toast.success('Logged in successfully!');
+        router.push('/dashboard');
+      }, 1000); // Simulate network delay
     } catch (error: any) {
       console.error('Login error:', error);
       const errorMessage = error?.message || 'Failed to login. Please try again.';
       toast.error(errorMessage);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -87,23 +59,24 @@ export default function LoginPage() {
       setIsLoading(true);
       
       // Create mock user data for Google login
-      const mockUser = {
-        id: 'google-' + Date.now(),
-        email: 'google-user@example.com',
-        name: 'Google User'
-      };
-      
-      const mockToken = 'google-token-' + Date.now();
-      
-      // Store mock data
-      localStorage.setItem('token', mockToken);
-      localStorage.setItem('user', JSON.stringify(mockUser));
-      
-      toast.success('Google login successful!');
-      router.push('/dashboard');
+      setTimeout(() => {
+        const mockUser = {
+          id: 'google-' + Date.now(),
+          email: 'google-user@example.com',
+          name: 'Google User'
+        };
+        
+        const mockToken = 'google-token-' + Date.now();
+        
+        // Store mock data
+        localStorage.setItem('token', mockToken);
+        localStorage.setItem('user', JSON.stringify(mockUser));
+        
+        toast.success('Google login successful!');
+        router.push('/dashboard');
+      }, 1000); // Simulate network delay
     } catch (error: any) {
       toast.error('Google login failed');
-    } finally {
       setIsLoading(false);
     }
   };
@@ -113,21 +86,24 @@ export default function LoginPage() {
       setIsLoading(true);
       
       // Create mock user data for Apple login
-      const mockUser = {
-        id: 'apple-' + Date.now(),
-        email: 'apple-user@example.com',
-        name: 'Apple User'
-      };
-      
-      const mockToken = 'apple-token-' + Date.now();
-      
-      // Store mock data
-      localStorage.setItem('token', mockToken);
-      localStorage.setItem('user', JSON.stringify(mockUser));
-      
-      toast.success('Apple login successful!');
-      router.push('/dashboard');
-    } finally {
+      setTimeout(() => {
+        const mockUser = {
+          id: 'apple-' + Date.now(),
+          email: 'apple-user@example.com',
+          name: 'Apple User'
+        };
+        
+        const mockToken = 'apple-token-' + Date.now();
+        
+        // Store mock data
+        localStorage.setItem('token', mockToken);
+        localStorage.setItem('user', JSON.stringify(mockUser));
+        
+        toast.success('Apple login successful!');
+        router.push('/dashboard');
+      }, 1000); // Simulate network delay
+    } catch (error: any) {
+      toast.error('Apple login failed');
       setIsLoading(false);
     }
   };
