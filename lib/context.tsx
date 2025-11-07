@@ -22,7 +22,6 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, name: string) => Promise<void>;
   loginWithGoogle: (email: string, name: string, googleId: string) => Promise<void>;
-  loginWithGitHub: (email: string, name: string, githubId: string) => Promise<void>;
   loginWithApple: (email: string, name: string, appleId: string) => Promise<void>;
   logout: () => void;
   updateProfile: (data: Partial<User>) => Promise<void>;
@@ -103,25 +102,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('user', JSON.stringify(data.user));
   };
 
-  const loginWithGitHub = async (email: string, name: string, githubId: string) => {
-    const response = await fetch('/api/auth/github', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, name, githubId }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || 'GitHub login failed');
-    }
-
-    setToken(data.token);
-    setUser(data.user);
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
-  };
-
   const loginWithApple = async (email: string, name: string, appleId: string) => {
     const response = await fetch('/api/auth/apple', {
       method: 'POST',
@@ -168,7 +148,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, signup, loginWithGoogle, loginWithGitHub, loginWithApple, logout, updateProfile, isLoading }}>
+    <AuthContext.Provider value={{ user, token, login, signup, loginWithGoogle, loginWithApple, logout, updateProfile, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
